@@ -1,4 +1,12 @@
 // console.log("Hello World!");
+// to prevent restarting my server every time i have used nodemon
+//To start server purely as node just run "start" script as "npm run start"
+
+//If you are using nodemon - index.js is run as "nodemon index.js" not node "index.js"
+// and predefined script is npm run dev
+
+
+
 const express = require("express");
 const users = require("./MOCK_DATA.json");
 const fs = require("fs");
@@ -170,17 +178,60 @@ app.post("/users",(req,res) => {
 
 
 app.patch("/users/:id", (req, res) => {
-  console.log("we will learn about this later");
+  let user_id = Number(req.params.id);
+  let my_user = users.find(u => u.id === user_id);
+  let new_users_list = users.filter(u => u.id !== user_id);
+  console.log("Request recieved for user: " + user_id + " to change details :" + JSON.stringify(req.body));
+  //why we used json .stringify here - as it converts the JavaScript object into a JSON string, making it easier to log and inspect the data being sent in the request body.
+  //console .log(req.body) prints [object Object] as it does not stringify the object 
+  //console can print objects directly though but only when passed to it directly not when referenced
+if(req.body.first_name) {
+  my_user.first_name = req.body.first_name;
+}
+if(req.body.last_name) {
+  my_user.last_name = req.body.last_name;
+}
+if(req.body.email) {
+  my_user.email = req.body.email;
+}
+if(req.body.gender) {
+  my_user.gender = req.body.gender;
+}
+if(req.body.ip_address) {
+  my_user.ip_address = req.body.ip_address;
+}
+if(req.body.id)
+{
+  res.json({ message: "User ID cannot be updated" });
+}
+new_users_list.push(my_user);
+fs.writeFile("./MOCK_DATA.json", JSON.stringify(new_users_list), (err) => {
+  if (err) {
+    console.error("Error writing to file:", err);
+  } else {
+    console.log("Data updated successfully");
+  }
+});
+  return res.status(200).json({ message: "User details updated successfully for", user: my_user });
+  
 });
 
 
 app.delete("/users/:id", (req, res) => {
   const id = Number(req.params.id);
-  users.filter(u => u.id !== id);
+  let users_new = users.filter(u => u.id !== id);
+  //// NOTE: .filter() returns a NEW array (doesn't modify original).
+  //users is imported directly from another file as a module as const - we cant reassign value to it
+//whereas push directly modifies the original array.used in above methods
+  //
+// Assign to a new variable(users_new) to avoid const/import reassignment errors.'
+
+// Reassign to 'users' only if it's mutable (let/var).
+
 
 
   //users is a dynamic array of objects as JSON format that can be modified according to our needs but it is stored in temporary memory - you need to modify the file to persist permanent changes
-  fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err) => {
+  fs.writeFile("./MOCK_DATA.json", JSON.stringify(users_new), (err) => {
     if (err) {
       console.error("Error writing to file:", err);
     } else {
