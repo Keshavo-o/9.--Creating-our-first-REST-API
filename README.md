@@ -10,8 +10,14 @@ Fetching a random user
 
 Fetching a user by ID
 
+Deleting an existing user 
+
+Adding new users
+
+Updating existing user details
+
 Perfect for learning the basics of API development and testing with tools like Postman or cURL.
 
-### will add more features later
+### will add more features later and we can implement it with MONGO DB for real world applications
 
 
